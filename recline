@@ -1,0 +1,62 @@
+#!/bin/bash
+# Ensures that an appropriate admin user exists.
+admin () {
+  if ! [ -e /tmp/capush/token ]
+  then
+    curl -X PUT $HOST/_config/admins/$USER -d "\"$PASS\""
+    mkdir -p /tmp/capush
+    touch /tmp/capush/token
+  fi
+}
+
+# Function that ensures a database exists.
+database () {
+  if [ -z "$1" ]
+  then
+    return 1
+  fi
+
+  set +v
+
+  curl -s -f $ROOT/$1 > /dev/null
+  if [ $? != 0 ]
+  then
+    curl -X PUT $ROOT/$1
+  fi
+
+  set -v
+  return 0
+}
+
+# Function that upserts a document from the JSON output of a file on disk.
+update () {
+  if [ -z "$1" ] || [ -z "$2" ]
+  then
+    return 1
+  fi
+
+  set +v
+
+  original=`curl -s $ROOT/$1`
+  data=`$2 | jq .`
+
+  if ! [ `echo $original | jq .error` != "null" ]
+  then
+    data=`echo {$original,$data} | jq -s 'add'`
+  fi
+
+  curl -s -X PUT $ROOT/$1 -H "Accept: application/json" -H "Content-Type: application/json" -d "$data" > /dev/null
+
+  set -v
+  return 0
+}
+
+# Check that we have a argument, bailing otherwise.
+if [ -z "$1" ]
+then
+  echo "Source file is required." >&2
+  exit 1
+fi
+
+# Have fun!
+source $1
