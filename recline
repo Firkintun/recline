@@ -38,11 +38,15 @@ update () {
   set +v
 
   original=`curl -s $ROOT/$1`
-  data=`$2 | jq .`
+  data=`$2`
 
-  if ! [ `echo $original | jq .error` != "null" ]
+  # Config values are not Objects, so we don't merge them.
+  if ! [[ $1 == _config* ]]
   then
-    data=`echo {$original,$data} | jq -s 'add'`
+    if ! [ `echo $original | jq .error` != "null" ]
+    then
+      data=`echo {$original,$data} | jq -s 'add'`
+    fi
   fi
 
   curl -s -X PUT $ROOT/$1 -H "Accept: application/json" -H "Content-Type: application/json" -d "$data" > /dev/null
