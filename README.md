@@ -15,7 +15,7 @@ Recline depends on `curl` and `jq`, so please install those first. Then, in
 some preferred working directory:
 
  1. `git clone https://github.com/Firkintun/recline.git`
- 1. `ln -sf ./recline/recline /usr/local/bin` - This step may have to be run
+ 1. `cp ./recline/recline /usr/local/bin` - This step may have to be run
  with `sudo`, but handle that with care.
 
 ## Usage
