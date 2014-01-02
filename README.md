@@ -54,6 +54,19 @@ update locations/_design/validation data/couch/locations/validation.js
 update _users/org.couchdb.user:schoon data/couch/users/schoon.js
 ```
 
+## Shebang
+
+Both as a form of documentation and to make running `recline` easier, we
+recommend adding an appropriate shebang to the top of your scripts:
+
+```
+#!/usr/bin/env recline
+```
+
+Your scripts can now be invoked directly (e.g. `./updates` instead of
+`recline ./updates`), and anyone reading the script knows it's meant
+specifically for use with Recline.
+
 ## Alternatives
 
 There are several, full CouchApp implementations. That said, when you're just
